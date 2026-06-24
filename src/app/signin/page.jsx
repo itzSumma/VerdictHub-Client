@@ -15,9 +15,13 @@ import {
 } from "@heroui/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import React from "react";
+import { Suspense } from "react";
 
 export default function SignInPage() {
+  return <Suspense fallback={<div className="py-20 text-center">Loading sign in…</div>}><SignInForm /></Suspense>;
+}
+
+function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const onSubmit = async (e) => {
