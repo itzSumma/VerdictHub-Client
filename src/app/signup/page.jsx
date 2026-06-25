@@ -96,7 +96,7 @@ export default function SignUpPage() {
               className="group relative flex w-full items-center justify-center overflow-hidden rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-2xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
             >
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition group-hover:translate-x-full" />
-              {loading ? <Spinner text="Creating account..." /> : "Create account & go to dashboard"}
+              {loading ? <Spinner text="Creating account..." /> : "Create account"}
             </button>
 
             <GoogleButton loading={googleLoading} disabled={loading || googleLoading} onClick={googleLogin} />

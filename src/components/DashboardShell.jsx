@@ -1,9 +1,10 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { BarChart3, BriefcaseBusiness, CreditCard, Home, LayoutDashboard, LogOut, MessageSquare, Scale, UserCog, Users } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, CreditCard, Home, LayoutDashboard, MessageSquare, Scale, UserCog, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import LogoutButton from "./LogoutButton";
 
 const linksByRole = {
   user: [
@@ -47,7 +48,7 @@ export default function DashboardShell({ children }) {
           </Link>
           <div className="flex items-center gap-2">
             <Link href="/" className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 shadow-sm transition hover:bg-amber-50 sm:inline-flex"><Home size={16} /> Public site</Link>
-            <button onClick={() => authClient.signOut()} className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-slate-800"><LogOut size={16} /> Logout</button>
+            <LogoutButton />
           </div>
         </div>
       </header>

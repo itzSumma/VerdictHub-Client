@@ -5,6 +5,7 @@ import { Menu, Scale, Search, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import LogoutButton from "./LogoutButton";
 
 export default function Navbar() {
   const { data: session } = authClient.useSession();
@@ -57,7 +58,7 @@ export default function Navbar() {
         <div className="hidden items-center gap-2 md:flex">
           {navLinks}
           {session ? (
-            <button onClick={() => authClient.signOut()} className="ml-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-extrabold text-slate-700 shadow-sm transition hover:border-amber-300 hover:text-slate-950">Logout</button>
+            <LogoutButton className="ml-2" />
           ) : (
             <>
               <Link href="/signin" className="rounded-full px-4 py-2 text-sm font-extrabold text-slate-700 hover:bg-slate-100">Login</Link>
@@ -76,7 +77,7 @@ export default function Navbar() {
           </form>
           <div className="grid gap-2">{navLinks}</div>
           {session ? (
-            <button onClick={() => authClient.signOut()} className="mt-4 rounded-full border px-4 py-2 font-bold">Logout</button>
+            <LogoutButton compact className="mt-4" />
           ) : (
             <Link href="/signin" onClick={() => setOpen(false)} className="mt-4 block rounded-full bg-slate-950 px-4 py-2 text-center font-bold text-white">Login</Link>
           )}
