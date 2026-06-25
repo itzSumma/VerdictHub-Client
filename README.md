@@ -7,6 +7,20 @@ VerdictHub is an online lawyer hiring platform where clients can browse legal ex
 - Client: https://verdict-hub-client.vercel.app/
 - Server: https://verdict-hub-server.vercel.app/
 
+## Demo Credentials
+
+Use the same password for all demo roles:
+
+```text
+Password: VerdictHub@123
+```
+
+| Role | Email |
+| --- | --- |
+| Admin | demo.admin@verdicthub.com |
+| Lawyer | demo.lawyer@verdicthub.com |
+| User / Client | demo.client@verdicthub.com |
+
 ## Key Features
 
 - Email/password and Google authentication with Better Auth
