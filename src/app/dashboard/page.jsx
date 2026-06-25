@@ -19,6 +19,7 @@ export default function DashboardPage() {
     : role === "admin"
       ? [
           { href: "/dashboard/admin/manage-users", label: "Manage users", icon: <UserRound /> },
+          { href: "/dashboard/admin/manage-lawyers", label: "Manage lawyers", icon: <BriefcaseBusiness /> },
           { href: "/dashboard/admin/all-transactions", label: "All transactions", icon: <ClipboardList /> },
           { href: "/dashboard/admin/analytics", label: "Analytics", icon: <BriefcaseBusiness /> },
         ]
