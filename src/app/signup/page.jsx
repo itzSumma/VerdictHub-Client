@@ -76,7 +76,7 @@ export default function SignUpPage() {
                 </Select.Trigger>
                 <Select.Popover>
                   <ListBox>
-                    <ListBox.Item id="buyer" textValue="buyer">
+                    <ListBox.Item id="user" textValue="user">
                       Client
                       <ListBox.ItemIndicator />
                     </ListBox.Item>
