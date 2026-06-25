@@ -5,6 +5,12 @@ import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { jwt } from "better-auth/plugins";
 
+if (!process.env.MONGODB_URI) {
+  throw new Error("Missing MONGODB_URI. Add it to the VerdictHub client environment variables in Vercel.");
+}
+
+const googleCredentials = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
+
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db(process.env.DB_NAME || "verdictHub");
 
@@ -15,12 +21,12 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  socialProviders: {
+  socialProviders: googleCredentials ? {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
-  },
+  } : {},
   user: {
     additionalFields: {
       role: {
