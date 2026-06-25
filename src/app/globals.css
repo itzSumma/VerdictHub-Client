@@ -1,2 +1,33 @@
 @import "tailwindcss";
 @import "@heroui/styles"; 
+
+:root {
+  --ink: #0f172a;
+  --gold: #d99a21;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(245, 158, 11, 0.13), transparent 30rem),
+    radial-gradient(circle at 90% 10%, rgba(15, 23, 42, 0.08), transparent 28rem),
+    linear-gradient(180deg, #fffaf0 0%, #f8fafc 42%, #ffffff 100%);
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.35);
+}
+
+.premium-card {
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 20px 70px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #f8d477, #d99a21 50%, #9a6415);
+}

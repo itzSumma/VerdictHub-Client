@@ -19,9 +19,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.className} h-full antialiased`}>
-      <body className="bg-slate-50 text-slate-900">
+      <body className="min-h-full text-slate-900">
         <Navbar />
-        <main className="max-w-7xl mx-auto px-2 min-h-screen">
+        <main className="mx-auto min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
           {children}
         </main>
 

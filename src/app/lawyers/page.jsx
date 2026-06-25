@@ -19,7 +19,7 @@ function BrowseLawyersContent() {
     sort: "newest",
     page: 1,
   });
-  const [result, setResult] = useState({ data: [], pages: 0 });
+  const [result, setResult] = useState({ data: [], pages: 0, total: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ function BrowseLawyersContent() {
         if (!response.ok) throw new Error();
         setResult(await response.json());
       } catch (error) {
-        if (error.name !== "AbortError") setResult({ data: [], pages: 0 });
+        if (error.name !== "AbortError") setResult({ data: [], pages: 0, total: 0 });
       } finally {
         setLoading(false);
       }
@@ -44,26 +44,23 @@ function BrowseLawyersContent() {
 
   return (
     <div className="py-10">
-      <div className="rounded-3xl bg-slate-950 px-6 py-12 text-white md:px-10">
-        <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-300">Find the right advocate</p>
-        <h1 className="mt-3 text-4xl font-extrabold">Browse verified lawyers</h1>
-        <p className="mt-3 max-w-2xl text-slate-300">Search legal specialists by name, practice area, fee, and availability.</p>
+      <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-14 text-white shadow-2xl shadow-slate-950/15 md:px-10">
+        <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-amber-400/20 blur-3xl" />
+        <p className="relative text-sm font-black uppercase tracking-[0.25em] text-amber-300">Find the right advocate</p>
+        <h1 className="relative mt-4 text-5xl font-black tracking-tight">Browse verified lawyers</h1>
+        <p className="relative mt-4 max-w-2xl text-slate-300">Search by name, specialty, consultation fee, and availability. Every profile is designed to help clients decide faster.</p>
       </div>
 
-      <div className="mt-8 grid gap-4 rounded-2xl border bg-white p-4 md:grid-cols-6">
+      <div className="premium-card sticky top-24 z-20 mt-8 grid gap-4 rounded-[1.75rem] p-4 md:grid-cols-6">
         <label className="relative md:col-span-2">
-          <Search className="absolute left-3 top-3 text-slate-400" size={18} />
-          <input value={filters.search} onChange={(e) => update("search", e.target.value)} placeholder="Search lawyer or specialization" className="w-full rounded-xl border px-10 py-3 outline-none focus:border-amber-500" />
+          <Search className="absolute left-4 top-3.5 text-slate-400" size={18} />
+          <input value={filters.search} onChange={(e) => update("search", e.target.value)} placeholder="Search lawyer or specialization" className="w-full rounded-2xl border border-slate-200 bg-white px-11 py-3.5 text-sm font-semibold outline-none transition focus:border-amber-400 focus:ring-4 focus:ring-amber-100" />
         </label>
-        <select value={filters.specialization} onChange={(e) => update("specialization", e.target.value)} className="rounded-xl border px-3 py-3">{specialties.map((item) => <option key={item}>{item}</option>)}</select>
-        <select value={filters.availability} onChange={(e) => update("availability", e.target.value)} className="rounded-xl border px-3 py-3">
-          <option>All</option>
-          <option value="available">Available</option>
-          <option value="busy">Busy</option>
-        </select>
-        <input value={filters.minFee} onChange={(e) => update("minFee", e.target.value)} type="number" min="0" placeholder="Min fee" className="rounded-xl border px-3 py-3" />
-        <input value={filters.maxFee} onChange={(e) => update("maxFee", e.target.value)} type="number" min="0" placeholder="Max fee" className="rounded-xl border px-3 py-3" />
-        <select value={filters.sort} onChange={(e) => update("sort", e.target.value)} className="rounded-xl border px-3 py-3 md:col-span-2">
+        <Select value={filters.specialization} onChange={(value) => update("specialization", value)} options={specialties} />
+        <Select value={filters.availability} onChange={(value) => update("availability", value)} options={["All", "available", "busy"]} />
+        <input value={filters.minFee} onChange={(e) => update("minFee", e.target.value)} type="number" min="0" placeholder="Min fee" className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" />
+        <input value={filters.maxFee} onChange={(e) => update("maxFee", e.target.value)} type="number" min="0" placeholder="Max fee" className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100" />
+        <select value={filters.sort} onChange={(e) => update("sort", e.target.value)} className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100 md:col-span-2">
           <option value="newest">Newest profiles</option>
           <option value="feeLow">Fee: low to high</option>
           <option value="feeHigh">Fee: high to low</option>
@@ -71,15 +68,20 @@ function BrowseLawyersContent() {
         </select>
       </div>
 
+      <div className="mt-8 flex items-center justify-between">
+        <p className="text-sm font-bold text-slate-500">{loading ? "Searching..." : `${result.total || 0} lawyers found`}</p>
+        <p className="rounded-full bg-white px-4 py-2 text-xs font-black text-slate-500 shadow-sm">6-12 results per page</p>
+      </div>
+
       {loading ? <Skeletons /> : result.data.length ? (
         <>
-          <div className="mt-8 grid gap-6 grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{result.data.map((lawyer) => <LawyerCard key={lawyer._id} lawyer={lawyer} />)}</div>
+          <div className="mt-8 grid gap-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{result.data.map((lawyer) => <LawyerCard key={lawyer._id} lawyer={lawyer} />)}</div>
           <Pagination page={filters.page} pages={result.pages} onChange={(page) => update("page", page)} />
         </>
       ) : (
-        <div className="mt-8 rounded-2xl border border-dashed p-16 text-center">
+        <div className="mt-8 rounded-[2rem] border border-dashed border-slate-300 bg-white/75 p-16 text-center shadow-sm">
           <SlidersHorizontal className="mx-auto text-amber-700" />
-          <h2 className="mt-4 text-xl font-bold">No lawyers match these filters</h2>
+          <h2 className="mt-4 text-2xl font-black">No lawyers match these filters</h2>
           <p className="mt-2 text-slate-500">Try a different name, specialty, fee, or availability option.</p>
         </div>
       )}
@@ -91,11 +93,15 @@ export default function BrowseLawyersPage() {
   return <Suspense fallback={<Skeletons />}><BrowseLawyersContent /></Suspense>;
 }
 
+function Select({ value, onChange, options }) {
+  return <select value={value} onChange={(e) => onChange(e.target.value)} className="rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-sm font-semibold capitalize outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-100">{options.map((item) => <option key={item} value={item}>{item}</option>)}</select>;
+}
+
 function Skeletons() {
-  return <div className="mt-8 grid gap-6 grid-cols-2 lg:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-96 animate-pulse rounded-2xl bg-slate-200" />)}</div>;
+  return <div className="mt-8 grid gap-7 sm:grid-cols-2 lg:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <div key={i} className="h-[29rem] animate-pulse rounded-[1.75rem] bg-white/80 shadow-lg" />)}</div>;
 }
 
 function Pagination({ page, pages, onChange }) {
   if (pages < 2) return null;
-  return <div className="mt-8 flex justify-center gap-3"><button disabled={page === 1} onClick={() => onChange(page - 1)} className="rounded-lg border px-4 py-2 disabled:opacity-40">Previous</button><span className="py-2 text-sm">Page {page} of {pages}</span><button disabled={page === pages} onClick={() => onChange(page + 1)} className="rounded-lg border px-4 py-2 disabled:opacity-40">Next</button></div>;
+  return <div className="mt-10 flex justify-center gap-3"><button disabled={page === 1} onClick={() => onChange(page - 1)} className="rounded-full border bg-white px-5 py-3 text-sm font-black shadow-sm disabled:opacity-40">Previous</button><span className="rounded-full bg-slate-950 px-5 py-3 text-sm font-black text-white">Page {page} of {pages}</span><button disabled={page === pages} onClick={() => onChange(page + 1)} className="rounded-full border bg-white px-5 py-3 text-sm font-black shadow-sm disabled:opacity-40">Next</button></div>;
 }
