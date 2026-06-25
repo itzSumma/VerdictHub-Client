@@ -4,8 +4,8 @@ VerdictHub is an online lawyer hiring platform where clients can browse legal ex
 
 ## Live Links
 
-- Client: add deployed client URL
-- Server: add deployed server URL
+- Client: https://verdict-hub-client.vercel.app/
+- Server: https://verdict-hub-server.vercel.app/
 
 ## Key Features
 
