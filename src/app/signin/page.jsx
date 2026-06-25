@@ -24,6 +24,7 @@ export default function SignInPage() {
 function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
   const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -36,9 +37,16 @@ function SignInForm() {
     if (error) return toast.error(error.message || 'Invalid email or password.');
     if (data) {
       toast.success('Welcome back.');
-      router.push(searchParams.get('redirect') || '/');
+      router.push(redirectTo);
       router.refresh();
     }
+  };
+
+  const googleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: redirectTo,
+    });
   };
 
   return (
@@ -64,6 +72,9 @@ function SignInForm() {
 
             <Button type="submit" className={"w-full"}>
               Signin
+            </Button>
+            <Button type="button" onClick={googleLogin} variant="bordered" className={"w-full"}>
+              Continue with Google
             </Button>
           </Fieldset>
         </Form>

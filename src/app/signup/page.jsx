@@ -19,6 +19,12 @@ import React from "react";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const googleLogin = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
+  };
   const onSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -91,6 +97,9 @@ export default function SignUpPage() {
 
             <Button type="submit" className={"w-full"}>
               Signup
+            </Button>
+            <Button type="button" onClick={googleLogin} variant="bordered" className={"w-full"}>
+              Continue with Google
             </Button>
           </Fieldset>
         </Form>
