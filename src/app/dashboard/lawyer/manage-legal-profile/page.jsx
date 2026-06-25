@@ -4,6 +4,7 @@ import { authorizedFetch, uploadToImgBB } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import ConfirmModal from "@/components/ConfirmModal";
 
 const emptyForm = { name: "", specialization: "Corporate", hourlyRate: "", availability: "available", image: "", bio: "" };
 
@@ -13,6 +14,8 @@ export default function ManageLegalProfilePage() {
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState("");
   const [saving, setSaving] = useState(false);
+  const [action, setAction] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const refreshListings = async (authToken = token) => {
     const response = await authorizedFetch("/lawyers/me/listings", authToken);
@@ -69,7 +72,6 @@ export default function ManageLegalProfilePage() {
   };
 
   const remove = async (id) => {
-    if (!confirm("Delete this legal profile?")) return;
     const response = await authorizedFetch(`/lawyers/${id}`, token, { method: "DELETE" });
     if (!response.ok) return toast.error("Could not delete profile.");
     toast.success("Legal profile deleted.");
@@ -82,7 +84,20 @@ export default function ManageLegalProfilePage() {
       body: JSON.stringify({ published: !lawyer.published }),
     });
     if (!response.ok) return toast.error("Could not update publication.");
+    toast.success(`Profile ${lawyer.published ? "unpublished" : "published"}.`);
     setLawyers((items) => items.map((item) => item._id === lawyer._id ? { ...item, published: !item.published } : item));
+  };
+
+  const confirmAction = async () => {
+    if (!action) return;
+    setActionLoading(true);
+    try {
+      if (action.type === "delete") await remove(action.item._id);
+      if (action.type === "publish") await togglePublish(action.item);
+      setAction(null);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   return (
@@ -117,14 +132,24 @@ export default function ManageLegalProfilePage() {
                 <td className="p-4">{lawyer.published ? "Published" : "Draft"}</td>
                 <td className="flex flex-wrap gap-2 p-4">
                   <button onClick={() => edit(lawyer)} className="rounded-lg bg-amber-400 px-3 py-2 font-bold">Edit</button>
-                  <button onClick={() => togglePublish(lawyer)} className="rounded-lg border px-3 py-2 font-bold">{lawyer.published ? "Unpublish" : "Publish"}</button>
-                  <button onClick={() => remove(lawyer._id)} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button>
+                  <button onClick={() => setAction({ type: "publish", item: lawyer })} className="rounded-lg border px-3 py-2 font-bold">{lawyer.published ? "Unpublish" : "Publish"}</button>
+                  <button onClick={() => setAction({ type: "delete", item: lawyer })} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <ConfirmModal
+        open={Boolean(action)}
+        title={action?.type === "delete" ? "Delete legal profile?" : `${action?.item?.published ? "Unpublish" : "Publish"} this profile?`}
+        message={action?.type === "delete" ? `This will permanently delete ${action?.item?.name}.` : `${action?.item?.name} will be ${action?.item?.published ? "hidden from" : "visible on"} the public lawyer browse page.`}
+        confirmLabel={action?.type === "delete" ? "Delete profile" : action?.item?.published ? "Unpublish" : "Publish"}
+        danger={action?.type === "delete"}
+        loading={actionLoading}
+        onConfirm={confirmAction}
+        onClose={() => setAction(null)}
+      />
     </section>
   );
 }

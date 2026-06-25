@@ -4,10 +4,13 @@ import { authorizedFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function ManageLawyersPage() {
   const [lawyers, setLawyers] = useState([]);
   const [token, setToken] = useState("");
+  const [action, setAction] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -31,11 +34,22 @@ export default function ManageLawyersPage() {
   };
 
   const remove = async (id) => {
-    if (!confirm("Delete this lawyer listing?")) return;
     const response = await authorizedFetch(`/lawyers/${id}`, token, { method: "DELETE" });
     if (!response.ok) return toast.error("Could not delete lawyer.");
     toast.success("Lawyer listing deleted.");
     setLawyers((items) => items.filter((item) => item._id !== id));
+  };
+
+  const confirmAction = async () => {
+    if (!action) return;
+    setActionLoading(true);
+    try {
+      if (action.type === "publish") await togglePublish(action.item);
+      if (action.type === "delete") await remove(action.item._id);
+      setAction(null);
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   return (
@@ -52,14 +66,24 @@ export default function ManageLawyersPage() {
                 <td className="p-4">${lawyer.hourlyRate}</td>
                 <td className="p-4">{lawyer.published ? "Published" : "Draft"}</td>
                 <td className="flex flex-wrap gap-2 p-4">
-                  <button onClick={() => togglePublish(lawyer)} className="rounded-lg bg-amber-400 px-3 py-2 font-bold">{lawyer.published ? "Unpublish" : "Publish"}</button>
-                  <button onClick={() => remove(lawyer._id)} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button>
+                  <button onClick={() => setAction({ type: "publish", item: lawyer })} className="rounded-lg bg-amber-400 px-3 py-2 font-bold">{lawyer.published ? "Unpublish" : "Publish"}</button>
+                  <button onClick={() => setAction({ type: "delete", item: lawyer })} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button>
                 </td>
               </tr>
             )) : <tr><td className="p-4" colSpan="5">No lawyer listings yet.</td></tr>}
           </tbody>
         </table>
       </div>
+      <ConfirmModal
+        open={Boolean(action)}
+        title={action?.type === "delete" ? "Delete lawyer listing?" : `${action?.item?.published ? "Unpublish" : "Publish"} lawyer listing?`}
+        message={action?.type === "delete" ? `This will permanently remove ${action?.item?.name} from VerdictHub.` : `${action?.item?.name} will be ${action?.item?.published ? "removed from" : "shown on"} the public lawyer page.`}
+        confirmLabel={action?.type === "delete" ? "Delete listing" : action?.item?.published ? "Unpublish" : "Publish"}
+        danger={action?.type === "delete"}
+        loading={actionLoading}
+        onConfirm={confirmAction}
+        onClose={() => setAction(null)}
+      />
     </section>
   );
 }

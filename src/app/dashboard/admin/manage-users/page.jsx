@@ -4,10 +4,13 @@ import { authorizedFetch } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import ConfirmModal from "@/components/ConfirmModal";
 
 export default function ManageUsersPage() {
   const [users, setUsers] = useState([]);
   const [token, setToken] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -31,11 +34,13 @@ export default function ManageUsersPage() {
   };
 
   const remove = async (id) => {
-    if (!confirm("Delete this user?")) return;
+    setDeleting(true);
     const response = await authorizedFetch(`/admin/users/${id}`, token, { method: "DELETE" });
+    setDeleting(false);
     if (!response.ok) return toast.error("Could not delete user.");
     toast.success("User deleted.");
     setUsers((items) => items.filter((user) => user._id !== id));
+    setDeleteTarget(null);
   };
 
   return (
@@ -56,12 +61,22 @@ export default function ManageUsersPage() {
                     <option value="admin">Admin</option>
                   </select>
                 </td>
-                <td className="p-4"><button onClick={() => remove(user._id)} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button></td>
+                <td className="p-4"><button onClick={() => setDeleteTarget(user)} className="rounded-lg border px-3 py-2 font-bold text-red-600">Delete</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <ConfirmModal
+        open={Boolean(deleteTarget)}
+        title="Delete user?"
+        message={`This will permanently delete ${deleteTarget?.email || "this user"} from VerdictHub.`}
+        confirmLabel="Delete user"
+        danger
+        loading={deleting}
+        onConfirm={() => deleteTarget && remove(deleteTarget._id)}
+        onClose={() => setDeleteTarget(null)}
+      />
     </section>
   );
 }
