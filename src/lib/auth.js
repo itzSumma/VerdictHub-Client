@@ -10,11 +10,18 @@ if (!process.env.MONGODB_URI) {
 }
 
 const googleCredentials = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
+const trustedOrigins = [
+  process.env.BETTER_AUTH_URL,
+  process.env.NEXT_PUBLIC_APP_URL,
+  "http://localhost:3000",
+  "https://verdict-hub-client.vercel.app",
+].filter(Boolean);
 
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db(process.env.DB_NAME || "verdictHub");
 
 export const auth = betterAuth({
+  trustedOrigins,
   database: mongodbAdapter(db, {
     client,
   }),
