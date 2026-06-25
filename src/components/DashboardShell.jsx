@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth-client";
-import { BarChart3, BriefcaseBusiness, CreditCard, LayoutDashboard, MessageSquare, UserCog, Users } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, CreditCard, Home, LayoutDashboard, LogOut, MessageSquare, Scale, UserCog, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -35,7 +35,24 @@ export default function DashboardShell({ children }) {
   const links = linksByRole[role] || linksByRole.user;
 
   return (
-    <div className="grid gap-6 py-8 lg:grid-cols-[18rem_1fr]">
+    <div className="mx-auto min-h-screen max-w-[1600px]">
+      <header className="sticky top-0 z-40 -mx-4 border-b border-slate-200 bg-slate-100/85 px-4 py-4 backdrop-blur-xl sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+        <div className="flex items-center justify-between gap-4">
+          <Link href="/dashboard" className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-slate-950 text-amber-300 shadow-lg shadow-slate-950/15"><Scale size={22} /></span>
+            <div>
+              <p className="text-xl font-black leading-none">VerdictHub</p>
+              <p className="mt-1 hidden text-xs font-black uppercase tracking-[0.22em] text-amber-700 sm:block">Dashboard suite</p>
+            </div>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-700 shadow-sm transition hover:bg-amber-50 sm:inline-flex"><Home size={16} /> Public site</Link>
+            <button onClick={() => authClient.signOut()} className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2 text-sm font-black text-white shadow-sm transition hover:bg-slate-800"><LogOut size={16} /> Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <div className="grid gap-6 py-8 lg:grid-cols-[18rem_1fr]">
       <aside className="h-fit rounded-[1.75rem] border border-white/70 bg-white/85 p-4 shadow-xl shadow-slate-900/7 backdrop-blur-xl lg:sticky lg:top-28">
         <div className="rounded-[1.25rem] bg-slate-950 p-5 text-white">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-amber-300">Dashboard</p>
@@ -55,6 +72,7 @@ export default function DashboardShell({ children }) {
         </nav>
       </aside>
       <div className="min-w-0">{children}</div>
+      </div>
     </div>
   );
 }

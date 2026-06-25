@@ -3,9 +3,8 @@ dns.setServers(['1.1.1.1', '1.0.0.1']);
 
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
+import AppChrome from "@/components/AppChrome";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,12 +19,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.className} h-full antialiased`}>
       <body className="min-h-full text-slate-900">
-        <Navbar />
-        <main className="mx-auto min-h-screen max-w-7xl px-4 sm:px-6 lg:px-8">
+        <AppChrome>
           {children}
-        </main>
-
-        <Footer/>
+        </AppChrome>
         <Toaster position="top-center" />
       </body>
     </html>
