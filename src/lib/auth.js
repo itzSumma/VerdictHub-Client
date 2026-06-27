@@ -8,17 +8,19 @@ if (!process.env.MONGODB_URI) {
 }
 
 const googleCredentials = process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET;
+const productionUrl = "https://verdict-hub-client.vercel.app";
+const authBaseUrl = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || productionUrl;
 const trustedOrigins = [
-  process.env.BETTER_AUTH_URL,
-  process.env.NEXT_PUBLIC_APP_URL,
+  authBaseUrl,
   "http://localhost:3000",
-  "https://verdict-hub-client.vercel.app",
+  productionUrl,
 ].filter(Boolean);
 
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db(process.env.DB_NAME || "verdictHub");
 
 export const auth = betterAuth({
+  baseURL: authBaseUrl,
   trustedOrigins,
   database: mongodbAdapter(db, {
     client,
