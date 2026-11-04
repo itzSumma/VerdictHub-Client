@@ -42,3 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Environment variables & secrets (added by GitHub Guardian)
+*.env
+!.env.sample
+.envrc
+.venv/
+venv/
